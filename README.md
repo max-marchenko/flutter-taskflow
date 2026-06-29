@@ -1,116 +1,260 @@
 # TaskFlow
 
-TaskFlow is a polished Flutter demo of a collaborative project and task management app for small teams. It is designed as a Junior Flutter Developer portfolio project: easy to run, visually intentional, role-aware, tested, and honest about what is demo-ready versus roadmap.
+TaskFlow is a polished Flutter portfolio project that demonstrates a collaborative project and task management app for small teams.
 
-## First 30 Seconds
+The project is built to show practical Junior Flutter Developer skills: adaptive UI, clean feature structure, demo authentication, role-aware behavior, task workflows, tests, CI, and honest documentation.
 
-- Runs immediately in demo mode with no Supabase account or API keys.
-- Shows a realistic workspace with projects, tasks, members, labels, comments, and activity.
-- Demonstrates adaptive Flutter UI across mobile, tablet, and desktop/web layouts.
-- Includes role-aware UI for Owner, Admin, Member, and Viewer.
-- Includes a Supabase/PostgreSQL schema as the planned production backend foundation.
+It is not a copied tutorial app and not a default Flutter counter demo. TaskFlow is designed as a recruiter-friendly product demo that can be cloned, run, reviewed, and extended.
 
-## Screenshots
+---
 
-Real screenshots have not been captured in this environment. Placeholder paths are reserved so screenshots can be added before a portfolio release:
+## Quick Preview
 
-- `docs/screenshots/dashboard.png`
-- `docs/screenshots/kanban.png`
-- `docs/screenshots/task-detail.png`
-- `docs/screenshots/admin-roles.png`
-
-Suggested local capture flow:
-
-1. Run `flutter run -d chrome`.
-2. Use demo mode.
-3. Capture Dashboard, Tasks/Kanban, Task detail, and Settings role switcher.
-4. Save PNGs to the paths above.
-
-## Features
-
-- Demo login and seeded demo users.
-- Dashboard metrics for active projects, due soon tasks, overdue tasks, and completed work.
-- Workspace members with role badges and demo invite/settings feedback.
-- Project list with status, progress, and direct task-board navigation.
-- Task workspace with list, Kanban columns, search, status filter, priority filter, sorting, status updates, and detail panel.
-- Task detail surface with assignee, labels, comments, and activity.
-- Role switcher for reviewing RBAC behavior without separate accounts.
-- Light, dark, and system theme modes.
-- Mobile bottom navigation, tablet navigation rail, and desktop side navigation.
-- Supabase migration for the production data model.
-- Unit and widget tests for permissions, demo data, filters, navigation, and role-aware UI.
-
-## Demo Mode
-
-TaskFlow is intentionally runnable without Supabase credentials:
+TaskFlow runs immediately in demo mode. No Supabase account, API keys, backend setup, or paid services are required.
 
 ```bash
 flutter pub get
 flutter run
 ```
 
-Use **Continue in demo mode** on the login screen.
+Then choose **Continue in demo mode**.
 
-Seeded users:
+What you can review in the first few minutes:
 
-| Role | Email |
-| --- | --- |
-| Owner | `olivia@taskflow.demo` |
-| Admin | `alex@taskflow.demo` |
-| Member | `mia@taskflow.demo` |
-| Viewer | `victor@taskflow.demo` |
+* Dashboard with realistic team/project metrics.
+* Projects with progress, status, and direct task-board navigation.
+* Task workspace with list view, Kanban-style columns, search, filters, sorting, status updates, and task detail panel.
+* Workspace members with role badges.
+* Settings screen with role switching between Owner, Admin, Member, and Viewer.
+* Adaptive layouts for mobile, tablet, desktop, and web.
 
-Any password with six or more characters works for seeded demo emails. The Settings screen lets reviewers preview the app as each seeded user/role.
+---
 
-## Architecture Overview
+## Product Walkthrough
 
-```text
-lib/
-  app/                 App composition, adaptive shell, theme
-  core/                Permissions, responsive helpers, reusable widgets
-  data/demo/           In-memory seeded demo data source
-  features/            Auth, dashboard, projects, tasks, workspaces, settings
-  models/              Domain models and enums
-supabase/migrations/   PostgreSQL schema and RLS intent
-test/                  Unit and widget coverage
-docs/                  Release checklist and screenshot slots
+```mermaid
+flowchart LR
+    A[Demo Login] --> B[Dashboard]
+    B --> C[Projects]
+    C --> D[Task Board]
+    D --> E[Task Detail]
+    B --> F[Workspace]
+    F --> G[Members & Roles]
+    B --> H[Settings]
+    H --> I[Role Switcher]
+    I --> D
 ```
 
-The current implementation keeps dependencies intentionally lean. Demo data is first-class and isolated in `DemoStore`, while the domain model and Supabase schema make the future backend path clear without pretending runtime Supabase integration is already complete.
+Recommended demo path:
 
-## Tech Stack
+1. Launch the app.
+2. Continue in demo mode.
+3. Review the dashboard metrics and recent activity.
+4. Open **Projects** and select a project.
+5. Use **Open task board** to inspect related tasks.
+6. Try search, status filter, priority filter, and sorting.
+7. Open a task detail panel and review labels, assignee, comments, and activity.
+8. Go to **Settings** and switch the demo role to Viewer.
+9. Return to tasks/projects and confirm that restricted actions are hidden or disabled.
 
-- Flutter and Material 3
-- Dart null safety
-- InheritedNotifier/ChangeNotifier for lightweight demo state
-- Flutter test for unit and widget coverage
-- Supabase/PostgreSQL schema for planned production persistence
-- GitHub Actions quality workflow
+---
+
+## Features
+
+### Authentication And Demo Session
+
+* Login screen.
+* Demo login mode.
+* Seeded demo users.
+* Friendly validation.
+* Logout flow.
+* No backend required for local review.
+
+### Dashboard
+
+* Active project metrics.
+* Due soon and overdue task indicators.
+* Completed work summary.
+* Recent activity feed.
+* Responsive card layout.
+
+### Projects
+
+* Project list with status and progress.
+* Task completion summary.
+* Project-to-task-board navigation.
+* Responsive project cards.
+* Mobile overflow-safe layout.
+
+### Tasks
+
+* Task list and Kanban-style workflow.
+* Search.
+* Status filtering.
+* Priority filtering.
+* Sorting.
+* Status updates.
+* Task detail panel/sheet.
+* Labels, assignee, comments, and activity timeline.
+
+### Workspace And Roles
+
+* Workspace members.
+* Role badges.
+* Demo invite/settings feedback.
+* Role-aware UI behavior.
+* Owner, Admin, Member, and Viewer permissions.
+
+### UI And Responsiveness
+
+* Material 3 based interface.
+* Dark, light, and system theme modes.
+* Mobile bottom navigation.
+* Tablet navigation rail.
+* Desktop side navigation.
+* Adaptive spacing and layout behavior.
+* Recruiter-friendly product feel.
+
+---
+
+## Demo Users
+
+Any password with six or more characters works for seeded demo emails.
+
+| Role   | Email                  |
+| ------ | ---------------------- |
+| Owner  | `olivia@taskflow.demo` |
+| Admin  | `alex@taskflow.demo`   |
+| Member | `mia@taskflow.demo`    |
+| Viewer | `victor@taskflow.demo` |
+
+The Settings screen includes a role switcher, so reviewers can quickly inspect how the UI changes for different permission levels.
+
+---
 
 ## Roles And Permissions
 
-| Capability | Owner | Admin | Member | Viewer |
-| --- | --- | --- | --- | --- |
-| View workspace | Yes | Yes | Yes | Yes |
-| Manage workspace settings | Yes | No | No | No |
-| Manage members | Yes | Yes | No | No |
-| Create projects | Yes | Yes | No | No |
-| Edit projects | Yes | Yes | No | No |
-| Delete projects | Yes | No | No | No |
-| Create tasks | Yes | Yes | Yes | No |
-| Edit any task | Yes | Yes | No | No |
-| Edit assigned/unassigned task | Yes | Yes | Yes | No |
-| Comment | Yes | Yes | Yes | No |
+| Capability                    | Owner | Admin | Member | Viewer |
+| ----------------------------- | ----- | ----- | ------ | ------ |
+| View workspace                | Yes   | Yes   | Yes    | Yes    |
+| Manage workspace settings     | Yes   | No    | No     | No     |
+| Manage members                | Yes   | Yes   | No     | No     |
+| Create projects               | Yes   | Yes   | No     | No     |
+| Edit projects                 | Yes   | Yes   | No     | No     |
+| Delete projects               | Yes   | No    | No     | No     |
+| Create tasks                  | Yes   | Yes   | Yes    | No     |
+| Edit any task                 | Yes   | Yes   | No     | No     |
+| Edit assigned/unassigned task | Yes   | Yes   | Yes    | No     |
+| Comment                       | Yes   | Yes   | Yes    | No     |
 
-The Flutter UI uses `WorkspacePolicy` to hide or disable actions. In production, these rules must also be enforced by Supabase Row Level Security.
+Role behavior is handled in Flutter through `WorkspacePolicy`.
 
-## Supabase Setup
+In a production backend, these rules should also be enforced with database-level security, such as Supabase Row Level Security policies.
 
-Runtime Supabase integration is not wired yet. The repository currently includes the schema foundation:
+---
 
-1. Create a Supabase project.
-2. Run `supabase/migrations/0001_initial_schema.sql`.
-3. Copy `.env.example` to `.env` when runtime integration is added.
+## Architecture
+
+TaskFlow uses a feature-first structure with a lightweight demo data layer.
+
+```text
+lib/
+  app/
+    shell, theme, navigation, app composition
+
+  core/
+    permissions, responsive helpers, reusable widgets
+
+  data/
+    demo data store and seeded demo workspace
+
+  features/
+    auth/
+    dashboard/
+    projects/
+    tasks/
+    workspaces/
+    settings/
+
+  models/
+    domain models and enums
+
+supabase/
+  migrations/
+    PostgreSQL schema and RLS intent
+
+test/
+  unit and widget tests
+
+docs/
+  release checklist
+```
+
+The goal is to keep the project understandable for a Junior Flutter Developer portfolio while still demonstrating clean boundaries, reusable components, and realistic product thinking.
+
+---
+
+## State And Data Flow
+
+```mermaid
+flowchart TD
+    UI[Flutter UI] --> Store[DemoStore]
+    Store --> Models[Domain Models]
+    UI --> Policy[WorkspacePolicy]
+    Policy --> Roles[Owner / Admin / Member / Viewer]
+    Models --> FutureBackend[Supabase Schema]
+```
+
+Current implementation:
+
+* Demo data is stored in memory.
+* UI reads and updates state through a central demo store.
+* Permission checks are separated into a dedicated policy layer.
+* Supabase schema exists as the planned production persistence foundation.
+
+---
+
+## Tech Stack
+
+* Flutter
+* Dart
+* Material 3
+* Dart null safety
+* ChangeNotifier / InheritedNotifier for lightweight demo state
+* Flutter test
+* GitHub Actions
+* Supabase/PostgreSQL schema foundation
+
+The dependency set is intentionally lean so the project remains easy to run, review, and maintain.
+
+---
+
+## Supabase Foundation
+
+Runtime Supabase integration is not wired yet. The repository includes a database schema foundation for future production work.
+
+Included migration:
+
+```text
+supabase/migrations/0001_initial_schema.sql
+```
+
+The schema covers:
+
+* profiles
+* workspaces
+* workspace members
+* projects
+* tasks
+* labels
+* task labels
+* task comments
+* activity events
+* timestamps
+* enums
+* RLS intent
+
+Environment example:
 
 ```text
 SUPABASE_URL=
@@ -118,9 +262,13 @@ SUPABASE_ANON_KEY=
 TASKFLOW_FORCE_DEMO=true
 ```
 
-The migration defines profiles, workspaces, workspace members, projects, tasks, labels, task labels, task comments, and activity events. It enables RLS and documents the intended role model. Full production policies and Flutter repository adapters remain roadmap work.
+This keeps the repository honest: TaskFlow is demo-ready now, and Supabase-ready at the schema level.
 
-## Quality Commands
+---
+
+## Quality
+
+Run the standard quality checks:
 
 ```bash
 dart format .
@@ -130,32 +278,82 @@ flutter build web
 flutter build apk --debug
 ```
 
-See `docs/release-checklist.md` for manual QA before merging to `main`.
+The project includes tests for:
 
-## Architecture Decisions
+* permission behavior
+* demo login flow
+* seeded demo data
+* task filters and sorting
+* project-to-task navigation
+* role-aware UI behavior
+* smoke coverage for core screens
 
-- Keep demo mode dependency-light so recruiters can run the app quickly.
-- Use a central `WorkspacePolicy` so role behavior is visible, testable, and easy to map to backend RLS.
-- Prefer adaptive layout helpers and reusable TaskFlow components over one-off screen styling.
-- Keep Supabase honest as a schema/backend plan until runtime repositories are implemented.
+Manual QA steps are documented in:
+
+```text
+docs/release-checklist.md
+```
+
+---
+
+## Repository Highlights
+
+This project demonstrates:
+
+* Building a complete Flutter app from an empty starter project.
+* Creating an adaptive UI across mobile, tablet, desktop, and web.
+* Designing reusable product-style components.
+* Implementing role-aware UI behavior.
+* Writing realistic demo data for portfolio review.
+* Keeping backend scope honest while preparing a Supabase schema.
+* Adding tests and CI instead of relying only on manual checks.
+* Maintaining a clean commit history with feature-focused commits.
+
+---
 
 ## Known Limitations
 
-- Demo data is in memory and resets when the app restarts.
-- Theme and selected demo role are not persisted yet; plugin-based persistence was deferred to avoid platform setup friction.
-- Supabase runtime auth/CRUD adapters are not implemented.
-- Kanban uses status dropdowns and selectable cards rather than drag and drop.
-- Real screenshots still need to be captured locally.
+TaskFlow is intentionally scoped as a portfolio demo, not a production SaaS.
+
+Current limitations:
+
+* Demo data is stored in memory and resets after restart.
+* Theme and selected demo role are not persisted yet.
+* Runtime Supabase auth and CRUD repositories are not implemented.
+* Kanban uses selectable cards and status controls instead of drag-and-drop.
+* Comments are displayed as seeded demo content; full comment creation is roadmap work.
+
+These limitations are documented deliberately to avoid overclaiming unfinished functionality.
+
+---
 
 ## Roadmap
 
-- Add Supabase repository implementations for auth and CRUD.
-- Add production RLS helper functions and concrete policies.
-- Persist theme, selected role, and selected workspace locally.
-- Add drag-and-drop Kanban interactions.
-- Add comment creation and richer task editing.
-- Capture real screenshots and add them to the README.
+Planned improvements:
 
-## Recruiter Note
+* Add Supabase runtime repositories for auth and CRUD.
+* Add concrete production Row Level Security policies.
+* Persist theme, selected role, and selected workspace locally.
+* Add drag-and-drop Kanban interactions.
+* Add comment creation and richer task editing.
+* Add profile editing.
+* Add workspace invitation flow.
+* Add end-to-end tests for the main demo path.
 
-TaskFlow demonstrates product thinking, Flutter UI composition, responsive design, role-aware behavior, test discipline, and honest documentation. It is intentionally scoped as a portfolio demo with a clear path toward a production backend.
+---
+
+## Recruiter Notes
+
+TaskFlow is built to demonstrate more than basic Flutter syntax.
+
+It shows:
+
+* product thinking
+* responsive UI composition
+* clean project organization
+* role and permission modeling
+* practical testing habits
+* realistic documentation
+* awareness of production backend requirements
+
+The app can be reviewed immediately in demo mode, while the codebase leaves a clear path for future backend integration.

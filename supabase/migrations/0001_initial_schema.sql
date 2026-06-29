@@ -100,6 +100,36 @@ create index idx_tasks_project_status on tasks(project_id, status);
 create index idx_tasks_assignee_due on tasks(assignee_id, due_date);
 create index idx_activity_workspace_created on activity_events(workspace_id, created_at desc);
 
+create or replace function set_updated_at()
+returns trigger
+language plpgsql
+as $$
+begin
+  new.updated_at = now();
+  return new;
+end;
+$$;
+
+create trigger profiles_set_updated_at
+before update on profiles
+for each row execute function set_updated_at();
+
+create trigger workspaces_set_updated_at
+before update on workspaces
+for each row execute function set_updated_at();
+
+create trigger projects_set_updated_at
+before update on projects
+for each row execute function set_updated_at();
+
+create trigger tasks_set_updated_at
+before update on tasks
+for each row execute function set_updated_at();
+
+create trigger task_comments_set_updated_at
+before update on task_comments
+for each row execute function set_updated_at();
+
 alter table profiles enable row level security;
 alter table workspaces enable row level security;
 alter table workspace_members enable row level security;
@@ -116,4 +146,7 @@ alter table activity_events enable row level security;
 -- Admins manage projects, tasks, labels, comments, and non-owner members.
 -- Members create/comment/update assigned tasks.
 -- Viewers are read-only.
--- Add helper functions such as is_workspace_member() and role checks before production deployment.
+-- Add helper functions such as is_workspace_member(workspace_id, auth.uid())
+-- and workspace_role_at_least(workspace_id, auth.uid(), required_role) before
+-- production deployment. Flutter role-aware UI is a convenience layer only;
+-- these policies must enforce the same rules at the database boundary.

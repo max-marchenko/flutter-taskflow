@@ -6,6 +6,8 @@ enum TaskStatus { backlog, todo, inProgress, review, done, archived }
 
 enum TaskPriority { low, medium, high, urgent }
 
+enum TaskSort { dueDate, priority, updated }
+
 extension WorkspaceRoleLabel on WorkspaceRole {
   String get label => switch (this) {
     WorkspaceRole.owner => 'Owner',
@@ -42,6 +44,14 @@ extension TaskPriorityLabel on TaskPriority {
     TaskPriority.medium => 'Medium',
     TaskPriority.high => 'High',
     TaskPriority.urgent => 'Urgent',
+  };
+}
+
+extension TaskSortLabel on TaskSort {
+  String get label => switch (this) {
+    TaskSort.dueDate => 'Due date',
+    TaskSort.priority => 'Priority',
+    TaskSort.updated => 'Recently updated',
   };
 }
 

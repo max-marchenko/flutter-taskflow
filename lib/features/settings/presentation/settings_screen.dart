@@ -44,12 +44,11 @@ class SettingsScreen extends StatelessWidget {
                 style: Theme.of(context).textTheme.titleLarge,
               ),
               const SizedBox(height: 8),
-              const Text(
-                'Switch roles to verify RBAC controls without separate accounts.',
-              ),
+              const Text('Preview the app as each seeded demo user and role.'),
               const SizedBox(height: 12),
               Wrap(
                 spacing: 8,
+                runSpacing: 8,
                 children: [
                   for (final role in WorkspaceRole.values)
                     ChoiceChip(

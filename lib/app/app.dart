@@ -150,62 +150,68 @@ class _SideNavigation extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final store = DemoScope.of(context);
-    return Padding(
+    return SingleChildScrollView(
       padding: const EdgeInsets.all(16),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              CircleAvatar(
-                backgroundColor: Theme.of(context).colorScheme.primary,
-                foregroundColor: Theme.of(context).colorScheme.onPrimary,
-                child: const Text('TF'),
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'TaskFlow',
-                      style: Theme.of(context).textTheme.titleLarge,
-                    ),
-                    Text(store.workspace.name, overflow: TextOverflow.ellipsis),
-                  ],
+      child: ConstrainedBox(
+        constraints: const BoxConstraints(minHeight: 560),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                CircleAvatar(
+                  backgroundColor: Theme.of(context).colorScheme.primary,
+                  foregroundColor: Theme.of(context).colorScheme.onPrimary,
+                  child: const Text('TF'),
                 ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 24),
-          RoleBadge(store.currentRole),
-          const SizedBox(height: 16),
-          for (var index = 0; index < destinations.length; index++)
-            Padding(
-              padding: const EdgeInsets.only(bottom: 6),
-              child: ListTile(
-                selected: index == selectedIndex,
-                leading: Icon(destinations[index].icon),
-                title: Text(destinations[index].label),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'TaskFlow',
+                        style: Theme.of(context).textTheme.titleLarge,
+                      ),
+                      Text(
+                        store.workspace.name,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ],
+                  ),
                 ),
-                onTap: () => onSelected(index),
-              ),
+              ],
             ),
-          const Spacer(),
-          Text(
-            store.currentUser.name,
-            style: Theme.of(context).textTheme.titleSmall,
-          ),
-          Text(store.currentUser.email, overflow: TextOverflow.ellipsis),
-          const SizedBox(height: 8),
-          OutlinedButton.icon(
-            onPressed: store.logout,
-            icon: const Icon(Icons.logout),
-            label: const Text('Log out'),
-          ),
-        ],
+            const SizedBox(height: 24),
+            RoleBadge(store.currentRole),
+            const SizedBox(height: 16),
+            for (var index = 0; index < destinations.length; index++)
+              Padding(
+                padding: const EdgeInsets.only(bottom: 6),
+                child: ListTile(
+                  selected: index == selectedIndex,
+                  leading: Icon(destinations[index].icon),
+                  title: Text(destinations[index].label),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  onTap: () => onSelected(index),
+                ),
+              ),
+            const SizedBox(height: 24),
+            Text(
+              store.currentUser.name,
+              style: Theme.of(context).textTheme.titleSmall,
+            ),
+            Text(store.currentUser.email, overflow: TextOverflow.ellipsis),
+            const SizedBox(height: 8),
+            OutlinedButton.icon(
+              onPressed: store.logout,
+              icon: const Icon(Icons.logout),
+              label: const Text('Log out'),
+            ),
+          ],
+        ),
       ),
     );
   }

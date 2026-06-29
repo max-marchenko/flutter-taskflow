@@ -15,35 +15,25 @@ class ProjectsScreen extends StatelessWidget {
     return ListView(
       padding: const EdgeInsets.all(20),
       children: [
-        Row(
-          children: [
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Projects',
-                    style: Theme.of(context).textTheme.headlineMedium,
-                  ),
-                  Text(
-                    '${store.projects.length} project spaces in ${store.workspace.name}',
-                  ),
-                ],
-              ),
-            ),
-            PermissionGate(
-              allowed: canCreate,
-              fallback: const Tooltip(
+        AppPageHeader(
+          title: 'Projects',
+          subtitle:
+              '${store.projects.length} project spaces in ${store.workspace.name}. Open a project to review its task board.',
+          action: PermissionGate(
+            allowed: canCreate,
+            fallback: Semantics(
+              label: 'Project creation unavailable for viewer role',
+              child: const Tooltip(
                 message: 'Viewers cannot create projects',
                 child: Icon(Icons.lock_outline),
               ),
-              child: FilledButton.icon(
-                onPressed: () => _showProjectDialog(context),
-                icon: const Icon(Icons.add),
-                label: const Text('New project'),
-              ),
             ),
-          ],
+            child: FilledButton.icon(
+              onPressed: () => _showProjectDialog(context),
+              icon: const Icon(Icons.add),
+              label: const Text('New project'),
+            ),
+          ),
         ),
         const SizedBox(height: 16),
         LayoutBuilder(
@@ -59,7 +49,7 @@ class ProjectsScreen extends StatelessWidget {
               mainAxisSpacing: 12,
               shrinkWrap: true,
               physics: const NeverScrollableScrollPhysics(),
-              childAspectRatio: columns == 1 ? 2.7 : 1.7,
+              childAspectRatio: columns == 1 ? 2.1 : 1.35,
               children: [
                 for (final project in store.projects)
                   InkWell(
@@ -93,6 +83,15 @@ class ProjectsScreen extends StatelessWidget {
                           const SizedBox(height: 8),
                           Text(
                             '${_doneCount(store, project.id)} of ${_taskCount(store, project.id)} tasks complete',
+                          ),
+                          const SizedBox(height: 8),
+                          Align(
+                            alignment: Alignment.centerLeft,
+                            child: TextButton.icon(
+                              onPressed: () => store.selectProject(project.id),
+                              icon: const Icon(Icons.arrow_forward),
+                              label: const Text('Open task board'),
+                            ),
                           ),
                         ],
                       ),
@@ -134,21 +133,23 @@ class ProjectsScreen extends StatelessWidget {
         final store = DemoScope.of(context);
         return AlertDialog(
           title: const Text('Create project'),
-          content: SizedBox(
-            width: 420,
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                TextField(
-                  controller: nameController,
-                  decoration: const InputDecoration(labelText: 'Name'),
-                ),
-                const SizedBox(height: 12),
-                TextField(
-                  controller: descriptionController,
-                  decoration: const InputDecoration(labelText: 'Description'),
-                ),
-              ],
+          content: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 420),
+            child: SingleChildScrollView(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  TextField(
+                    controller: nameController,
+                    decoration: const InputDecoration(labelText: 'Name'),
+                  ),
+                  const SizedBox(height: 12),
+                  TextField(
+                    controller: descriptionController,
+                    decoration: const InputDecoration(labelText: 'Description'),
+                  ),
+                ],
+              ),
             ),
           ),
           actions: [

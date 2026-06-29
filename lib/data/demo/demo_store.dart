@@ -27,8 +27,11 @@ class DemoStore extends ChangeNotifier {
   ThemeMode themeMode = ThemeMode.system;
   int selectedIndex = 0;
   String? selectedProjectId;
+  String? selectedTaskId;
   String taskQuery = '';
   TaskStatus? statusFilter;
+  TaskPriority? priorityFilter;
+  TaskSort taskSort = TaskSort.dueDate;
 
   AppUser get currentUser =>
       users.firstWhere((user) => user.id == currentUserId);
@@ -47,15 +50,37 @@ class DemoStore extends ChangeNotifier {
 
   List<TaskItem> get visibleTasks {
     final query = taskQuery.toLowerCase().trim();
-    return tasks.where((task) {
+    final filtered = tasks.where((task) {
       final matchesProject = task.projectId == selectedProject.id;
       final matchesQuery =
           query.isEmpty ||
           task.title.toLowerCase().contains(query) ||
           task.description.toLowerCase().contains(query);
       final matchesStatus = statusFilter == null || task.status == statusFilter;
-      return matchesProject && matchesQuery && matchesStatus;
+      final matchesPriority =
+          priorityFilter == null || task.priority == priorityFilter;
+      return matchesProject && matchesQuery && matchesStatus && matchesPriority;
     }).toList();
+    filtered.sort(switch (taskSort) {
+      TaskSort.dueDate => (a, b) => a.dueDate.compareTo(b.dueDate),
+      TaskSort.priority => (a, b) => b.priority.index.compareTo(
+        a.priority.index,
+      ),
+      TaskSort.updated => (a, b) => b.updatedAt.compareTo(a.updatedAt),
+    });
+    return filtered;
+  }
+
+  TaskItem? get selectedTask {
+    final projectTasks = visibleTasks;
+    if (projectTasks.isEmpty) return null;
+    final selected = projectTasks.where((task) => task.id == selectedTaskId);
+    return selected.isEmpty ? projectTasks.first : selected.first;
+  }
+
+  List<TaskComment> commentsFor(String taskId) {
+    return comments.where((comment) => comment.taskId == taskId).toList()
+      ..sort((a, b) => b.createdAt.compareTo(a.createdAt));
   }
 
   int get activeProjectCount {
@@ -131,17 +156,44 @@ class DemoStore extends ChangeNotifier {
 
   void selectProject(String id) {
     selectedProjectId = id;
-    selectedIndex = 1;
+    selectedTaskId = null;
+    selectedIndex = 2;
+    notifyListeners();
+  }
+
+  void selectTask(String id) {
+    selectedTaskId = id;
     notifyListeners();
   }
 
   void setTaskQuery(String value) {
     taskQuery = value;
+    selectedTaskId = null;
     notifyListeners();
   }
 
   void setStatusFilter(TaskStatus? value) {
     statusFilter = value;
+    selectedTaskId = null;
+    notifyListeners();
+  }
+
+  void setPriorityFilter(TaskPriority? value) {
+    priorityFilter = value;
+    selectedTaskId = null;
+    notifyListeners();
+  }
+
+  void setTaskSort(TaskSort value) {
+    taskSort = value;
+    notifyListeners();
+  }
+
+  void clearTaskFilters() {
+    taskQuery = '';
+    statusFilter = null;
+    priorityFilter = null;
+    selectedTaskId = null;
     notifyListeners();
   }
 
@@ -184,6 +236,7 @@ class DemoStore extends ChangeNotifier {
       updatedAt: DateTime.now(),
     );
     tasks = [task, ...tasks];
+    selectedTaskId = task.id;
     _addActivity('Created task "$title"');
     notifyListeners();
   }
@@ -193,6 +246,7 @@ class DemoStore extends ChangeNotifier {
       for (final item in tasks)
         if (item.id == task.id) item.copyWith(status: status) else item,
     ];
+    selectedTaskId = task.id;
     _addActivity('Moved "${task.title}" to ${status.label}');
     notifyListeners();
   }

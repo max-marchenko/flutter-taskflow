@@ -17,8 +17,11 @@ class WorkspaceScreen extends StatelessWidget {
     return ListView(
       padding: const EdgeInsets.all(20),
       children: [
-        Text('Workspace', style: Theme.of(context).textTheme.headlineMedium),
-        Text(store.workspace.description),
+        AppPageHeader(
+          title: 'Workspace',
+          subtitle:
+              '${store.workspace.description} Current access: ${store.currentRole.label}.',
+        ),
         const SizedBox(height: 16),
         AppSectionCard(
           child: Column(
@@ -34,7 +37,13 @@ class WorkspaceScreen extends StatelessWidget {
                   ),
                   if (canManageMembers)
                     OutlinedButton.icon(
-                      onPressed: () {},
+                      onPressed: () => ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text(
+                            'Demo invite flow: Supabase email invites are planned for the backend milestone.',
+                          ),
+                        ),
+                      ),
                       icon: const Icon(Icons.person_add_alt),
                       label: const Text('Invite'),
                     )
@@ -70,14 +79,20 @@ class WorkspaceScreen extends StatelessWidget {
                 style: Theme.of(context).textTheme.titleLarge,
               ),
               const SizedBox(height: 8),
-              Text(
-                'Current role: ${store.currentRole.label}. Production role enforcement belongs in Supabase RLS.',
+              const Text(
+                'Owner-only controls are disabled for other roles in this demo. The README explains how these rules map to Supabase RLS.',
               ),
               const SizedBox(height: 12),
               FilledButton.icon(
                 onPressed:
                     PolicyScope.policy.canManageWorkspace(store.currentRole)
-                    ? () {}
+                    ? () => ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text(
+                            'Workspace settings are mocked in demo mode.',
+                          ),
+                        ),
+                      )
                     : null,
                 icon: const Icon(Icons.tune),
                 label: const Text('Manage workspace'),

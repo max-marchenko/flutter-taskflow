@@ -20,6 +20,43 @@ class AppSectionCard extends StatelessWidget {
   }
 }
 
+class AppPageHeader extends StatelessWidget {
+  const AppPageHeader({
+    required this.title,
+    required this.subtitle,
+    this.action,
+    super.key,
+  });
+
+  final String title;
+  final String subtitle;
+  final Widget? action;
+
+  @override
+  Widget build(BuildContext context) {
+    return Wrap(
+      spacing: 16,
+      runSpacing: 12,
+      alignment: WrapAlignment.spaceBetween,
+      crossAxisAlignment: WrapCrossAlignment.center,
+      children: [
+        ConstrainedBox(
+          constraints: const BoxConstraints(maxWidth: 680),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(title, style: Theme.of(context).textTheme.headlineMedium),
+              const SizedBox(height: 2),
+              Text(subtitle),
+            ],
+          ),
+        ),
+        ?action,
+      ],
+    );
+  }
+}
+
 class MetricCard extends StatelessWidget {
   const MetricCard({
     required this.label,
@@ -70,9 +107,25 @@ class StatusChip extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final label = status?.label ?? taskStatus!.label;
+    final color = switch (status) {
+      ProjectStatus.active => Colors.teal,
+      ProjectStatus.planned => Colors.blue,
+      ProjectStatus.paused => Colors.amber,
+      ProjectStatus.completed => Colors.green,
+      ProjectStatus.archived => Colors.blueGrey,
+      null => switch (taskStatus!) {
+        TaskStatus.backlog => Colors.blueGrey,
+        TaskStatus.todo => Colors.blue,
+        TaskStatus.inProgress => Colors.teal,
+        TaskStatus.review => Colors.purple,
+        TaskStatus.done => Colors.green,
+        TaskStatus.archived => Colors.blueGrey,
+      },
+    };
     return Chip(
       label: Text(label),
       visualDensity: VisualDensity.compact,
+      avatar: Icon(Icons.circle, color: color, size: 12),
       side: BorderSide(color: Theme.of(context).colorScheme.outlineVariant),
     );
   }

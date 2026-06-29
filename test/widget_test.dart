@@ -1,5 +1,8 @@
+import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:taskflow/app/app.dart';
+import 'package:taskflow/data/demo/demo_store.dart';
+import 'package:taskflow/features/projects/presentation/projects_screen.dart';
 
 void main() {
   testWidgets('app launches to polished demo login', (tester) async {
@@ -48,5 +51,51 @@ void main() {
       ),
       findsOneWidget,
     );
+  });
+
+  testWidgets('mobile projects layout does not overflow', (tester) async {
+    tester.view.physicalSize = const Size(390, 844);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(() {
+      tester.view.resetPhysicalSize();
+      tester.view.resetDevicePixelRatio();
+    });
+
+    final store = DemoStore()
+      ..demoLogin()
+      ..setThemeMode(ThemeMode.dark)
+      ..setSelectedIndex(1);
+
+    await tester.pumpWidget(
+      DemoScope(
+        store: store,
+        child: MaterialApp(
+          theme: ThemeData.light(useMaterial3: true),
+          darkTheme: ThemeData.dark(useMaterial3: true),
+          themeMode: ThemeMode.dark,
+          home: Scaffold(
+            body: const ProjectsScreen(),
+            bottomNavigationBar: NavigationBar(
+              destinations: const [
+                NavigationDestination(
+                  icon: Icon(Icons.dashboard_outlined),
+                  label: 'Dashboard',
+                ),
+                NavigationDestination(
+                  icon: Icon(Icons.folder_copy_outlined),
+                  label: 'Projects',
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+    await tester.pump();
+
+    expect(find.text('Mobile Redesign'), findsOneWidget);
+    expect(find.text('Launch Checklist'), findsOneWidget);
+    expect(find.text('Website Refresh'), findsOneWidget);
+    expect(tester.takeException(), isNull);
   });
 }

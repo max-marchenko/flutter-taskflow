@@ -12,8 +12,9 @@ class ProjectsScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final store = DemoScope.of(context);
     final canCreate = PolicyScope.policy.canCreateProject(store.currentRole);
+    final isCompact = MediaQuery.sizeOf(context).width < 700;
     return ListView(
-      padding: const EdgeInsets.all(20),
+      padding: EdgeInsets.fromLTRB(20, 20, 20, isCompact ? 96 : 20),
       children: [
         AppPageHeader(
           title: 'Projects',
@@ -43,58 +44,22 @@ class ProjectsScreen extends StatelessWidget {
                 : constraints.maxWidth > 620
                 ? 2
                 : 1;
-            return GridView.count(
-              crossAxisCount: columns,
-              crossAxisSpacing: 12,
-              mainAxisSpacing: 12,
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              childAspectRatio: columns == 1 ? 2.1 : 1.35,
+            final cardWidth = columns == 1
+                ? constraints.maxWidth
+                : (constraints.maxWidth - (12 * (columns - 1))) / columns;
+            return Wrap(
+              spacing: 12,
+              runSpacing: 12,
               children: [
                 for (final project in store.projects)
-                  InkWell(
-                    onTap: () => store.selectProject(project.id),
-                    borderRadius: BorderRadius.circular(8),
-                    child: AppSectionCard(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Row(
-                            children: [
-                              Expanded(
-                                child: Text(
-                                  project.name,
-                                  style: Theme.of(context).textTheme.titleLarge,
-                                ),
-                              ),
-                              StatusChip.project(project.status),
-                            ],
-                          ),
-                          const SizedBox(height: 8),
-                          Text(
-                            project.description,
-                            maxLines: 2,
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                          const Spacer(),
-                          LinearProgressIndicator(
-                            value: _progressFor(store, project.id),
-                          ),
-                          const SizedBox(height: 8),
-                          Text(
-                            '${_doneCount(store, project.id)} of ${_taskCount(store, project.id)} tasks complete',
-                          ),
-                          const SizedBox(height: 8),
-                          Align(
-                            alignment: Alignment.centerLeft,
-                            child: TextButton.icon(
-                              onPressed: () => store.selectProject(project.id),
-                              icon: const Icon(Icons.arrow_forward),
-                              label: const Text('Open task board'),
-                            ),
-                          ),
-                        ],
-                      ),
+                  SizedBox(
+                    width: cardWidth,
+                    child: _ProjectCard(
+                      project: project,
+                      taskCount: _taskCount(store, project.id),
+                      doneCount: _doneCount(store, project.id),
+                      progress: _progressFor(store, project.id),
+                      onOpen: () => store.selectProject(project.id),
                     ),
                   ),
               ],
@@ -171,6 +136,76 @@ class ProjectsScreen extends StatelessWidget {
           ],
         );
       },
+    );
+  }
+}
+
+class _ProjectCard extends StatelessWidget {
+  const _ProjectCard({
+    required this.project,
+    required this.taskCount,
+    required this.doneCount,
+    required this.progress,
+    required this.onOpen,
+  });
+
+  final Project project;
+  final int taskCount;
+  final int doneCount;
+  final double progress;
+  final VoidCallback onOpen;
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      onTap: onOpen,
+      borderRadius: BorderRadius.circular(8),
+      child: AppSectionCard(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Wrap(
+              spacing: 8,
+              runSpacing: 8,
+              crossAxisAlignment: WrapCrossAlignment.center,
+              children: [
+                ConstrainedBox(
+                  constraints: const BoxConstraints(
+                    minWidth: 160,
+                    maxWidth: 340,
+                  ),
+                  child: Text(
+                    project.name,
+                    style: Theme.of(context).textTheme.titleLarge,
+                    softWrap: true,
+                  ),
+                ),
+                StatusChip.project(project.status),
+              ],
+            ),
+            const SizedBox(height: 8),
+            Text(
+              project.description,
+              maxLines: 3,
+              overflow: TextOverflow.ellipsis,
+            ),
+            const SizedBox(height: 18),
+            LinearProgressIndicator(value: progress),
+            const SizedBox(height: 8),
+            Text('$doneCount of $taskCount tasks complete'),
+            const SizedBox(height: 4),
+            Align(
+              alignment: Alignment.centerLeft,
+              child: TextButton.icon(
+                onPressed: onOpen,
+                icon: const Icon(Icons.arrow_forward),
+                label: const Text('Open task board'),
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }
